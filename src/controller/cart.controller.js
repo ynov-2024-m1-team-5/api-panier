@@ -15,13 +15,13 @@ exports.getProductsInShoppingCart = async (req, res) => {
         });
 
         if(cart) {
-            const elements = await CartProduct.count({
+            const elements = await CartProduct.findOne({
                 where: {
                     shoppingCartId: cart.shoppingCartId,
                     isOrder: false
                 }
             });
-            return res.status(200).json({ success:true, elements});
+            return res.status(200).json({ success:true, elements, shoppingCart: cart.shoppingCartId});
         }
         return res.status(404).json({ success:false, message: "Cart not found"});
     } catch (error) {
@@ -166,6 +166,47 @@ exports.updateCartProduct = async(req, res) => {
         res.status(200).json({
             success: true,
             message: "Cart product quantity was updated successfully"
+        });
+
+    } catch (error) {
+
+        console.error("Error updating cart product quantity : ", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update cart product quantity",
+            error: error.message
+        })
+
+    }
+
+}
+
+
+exports.getAllCartProduct = async(req, res) => {
+
+    try {
+
+        const { shoppingCartId } = req.params;
+
+        if(isNaN(shoppingCartId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Bad request. No id provided"
+            });
+        }
+
+        const shop = await CartProduct.findAll({
+            where: {
+                shoppingCartId: shoppingCartId
+            }
+        });
+
+
+
+        res.status(200).json({
+            success: true,
+            message: "Cart product quantity was updated successfully",
+            shop: shop
         });
 
     } catch (error) {
