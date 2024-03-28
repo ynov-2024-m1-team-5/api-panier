@@ -186,18 +186,26 @@ exports.getAllCartProduct = async(req, res) => {
 
     try {
 
-        const { shoppingCartId } = req.params;
+        const { customer_id } = req.params;
 
-        if(isNaN(shoppingCartId)) {
+        if(isNaN(customer_id)) {
             return res.status(400).json({
                 success: false,
                 message: "Bad request. No id provided"
             });
         }
 
+
+        const shoppingCart = await ShoppingCart.findOne({
+            where: {
+                customerId: customer_id
+            }
+        });
+
+
         const shop = await CartProduct.findAll({
             where: {
-                shoppingCartId: shoppingCartId
+                shoppingCartId: shoppingCart.shoppingCartId
             }
         });
 
