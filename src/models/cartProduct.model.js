@@ -9,7 +9,8 @@ const CartProduct = sequelize.define("CartProduct", {
     },
     productId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: { model: 'Products', key: 'id' }
     },
     quantitySelected: {
         type: DataTypes.INTEGER,
@@ -25,7 +26,13 @@ const CartProduct = sequelize.define("CartProduct", {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    shoppingCartId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: 'ShoppingCart', key: 'shoppingCartId' }
     }
+    
 })
 
 module.exports = CartProduct;

@@ -9,12 +9,8 @@ const ShoppingCart = sequelize.define("ShoppingCart", {
     },
     customerId: {
         type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    cartProductIds: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
         allowNull: false,
-        defaultValue: []
+        references: { model: 'customer', key: 'id' }
     },
     totalPrice: {
         type: DataTypes.FLOAT,
