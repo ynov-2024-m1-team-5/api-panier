@@ -30,7 +30,7 @@ const CartProduct = sequelize.define("CartProduct", {
     shoppingCartId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'ShoppingCart', key: 'shoppingCartId' }
+        references: { model: 'ShoppingCarts', key: 'shoppingCartId' }
     }
     
 })
