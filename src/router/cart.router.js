@@ -7,7 +7,7 @@ const verifyToken = require('../middlewares/verifyToken');
 router.get('/:customer_id', verifyToken, verifyUser, cartController.getProductsInShoppingCart);
 router.post('/createCart', cartController.createShoppingCart);
 router.post('/:customer_id', verifyToken, verifyUser, cartController.createCartProduct);
-router.delete('/:cartProductId', verifyToken, verifyUser, cartController.deleteCartProduct);
+router.delete('/:cartProductId/user/:customer_id', verifyToken, verifyUser, cartController.deleteCartProduct);
 router.put('/:cartProductId', verifyToken, verifyUser, cartController.updateCartProduct);
 router.get('/:customer_id/cartProducts', verifyToken, verifyUser, cartController.getAllCartProduct);
 
