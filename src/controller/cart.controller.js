@@ -1,5 +1,6 @@
 const ShoppingCart = require("../models/shoppingCart.model");
 const CartProduct = require("../models/cartProduct.model");
+const { all } = require("../router");
 
 
 // param : customer_id
@@ -56,9 +57,76 @@ exports.createShoppingCart = async (req, res) => {
 
 }
 
-// param : customer_id and body
-exports.createCartProduct = async (req, res) => {
+// // param : customer_id and body
+// exports.createCartProduct = async (req, res) => {
 
+//     try {
+//         const { customer_id } = req.params;
+//         const { productId, quantitySelected, sellingPrice, isOrder } = req.body;
+        
+//         const cart = await ShoppingCart.findOne({
+//             where: {
+//                 customerId: customer_id
+//             }
+//         });
+
+//         console.log('BEFORE : '+productId);
+//         const productExistInCart = await CartProduct.findOne({
+//             where: {
+//                 productId: productId
+//             }
+//         });
+
+//         console.log('AFTER : '+productExistInCart);
+
+//         const shoppingCartId = cart.shoppingCartId;
+
+//         if(cart) {
+//             if(!productExistInCart){
+//                 const newElement = await CartProduct.create({
+//                     productId,
+//                     quantitySelected,
+//                     sellingPrice,
+//                     isOrder,
+//                     shoppingCartId
+//                 });
+
+//                 res.status(201).json({
+//                     success: true,
+//                     message: "Cart product was created successfully"
+//                 });
+//                 res.status(200).json({ success:true, newElement});
+//             } else {
+//                 const newValueQuantity = productExistInCart.quanditySelected + quantitySelected;
+//                 const updateElement = await productExistInCart.update({
+//                     newValueQuantity,
+//                     isOrder,
+//                     shoppingCartId
+//                 });
+
+//                 console.log("UDPDATED : "+JSON.stringify(updateElement));
+//                 res.status(201).json({
+//                     success: true,
+//                     message: "Cart product was created successfully"
+//                 });
+//                 res.status(200).json({ success:true, updateElement});
+//             }
+            
+            
+//         }
+//         return res.status(404).json({ success:false, message: "Cart not found"});
+            
+//     } catch (error) {
+//         console.error('Error creating shopping cart: ', error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'Failed to create shopping cart',
+//             error: error.message
+//         });
+//     }
+// }
+
+exports.createCartProduct = async (req, res) => {
     try {
         const { customer_id } = req.params;
         const { productId, quantitySelected, sellingPrice, isOrder } = req.body;
@@ -69,57 +137,47 @@ exports.createCartProduct = async (req, res) => {
             }
         });
 
-        const productExistInCart = await CartProduct.findOne({
+        const shoppingCartId = cart.shoppingCartId;
+
+        if (!cart) {
+            return res.status(404).json({ success: false, message: "Cart not found" });
+        }
+
+        let cartProduct = await CartProduct.findOne({
             where: {
-                productId: productId
+                productId: productId,
+                shoppingCartId: shoppingCartId
             }
         });
 
-        const shoppingCartId = cart.shoppingCartId;
-
-        if(cart) {
-            if(!productExistInCart){
-                const newElement = await CartProduct.create({
-                    productId,
-                    quantitySelected,
-                    sellingPrice,
-                    isOrder,
-                    shoppingCartId
-                });
-
-                res.status(201).json({
-                    success: true,
-                    message: "Cart product was created successfully"
-                });
-                return res.status(200).json({ success:true, newElement});
-            } else {
-                const newValueQuantity = productExistInCart.quanditySelected + quantitySelected;
-                const updateElement = await CartProduct.update({
-                    newValueQuantity,
-                    isOrder,
-                    shoppingCartId
-                });
-
-                res.status(201).json({
-                    success: true,
-                    message: "Cart product was created successfully"
-                });
-                return res.status(200).json({ success:true, updateElement});
-            }
-            
-            
+        if (!cartProduct) {
+            cartProduct = await CartProduct.create({
+                productId,
+                quantitySelected,
+                sellingPrice,
+                isOrder,
+                shoppingCartId
+            });
+            return res.status(201).json({ success: true, message: "Cart product was created successfully", cartProduct });
+        } else {
+            const newValueQuantity = cartProduct.quantitySelected + quantitySelected;
+            const updatedCartProduct = await cartProduct.update({
+                quantitySelected: newValueQuantity,
+                isOrder: isOrder,
+                shoppingCartId: shoppingCartId
+            });
+            return res.status(200).json({ success: true, message: "Cart product was updated successfully", updatedCartProduct });
         }
-        return res.status(404).json({ success:false, message: "Cart not found"});
-            
     } catch (error) {
-        console.error('Error creating shopping cart: ', error);
+        console.error('Error creating or updating shopping cart product: ', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to create shopping cart',
+            message: 'Failed to create or update shopping cart product',
             error: error.message
         });
     }
-}
+};
+
 
 // param : cartProductId
 exports.deleteCartProduct = async (req, res) => {
