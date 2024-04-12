@@ -68,21 +68,46 @@ exports.createCartProduct = async (req, res) => {
                 customerId: customer_id
             }
         });
+
+        const productExistInCart = await CartProduct.findOne({
+            where: {
+                productId: productId
+            }
+        });
+
         const shoppingCartId = cart.shoppingCartId;
 
         if(cart) {
-            const newElement = await CartProduct.create({
-                productId,
-                quantitySelected,
-                sellingPrice,
-                isOrder,
-                shoppingCartId
-            });
-            res.status(201).json({
-                success: true,
-                message: "Cart product was created successfully"
-            });
-            return res.status(200).json({ success:true, newElement});
+            if(!productExistInCart){
+                const newElement = await CartProduct.create({
+                    productId,
+                    quantitySelected,
+                    sellingPrice,
+                    isOrder,
+                    shoppingCartId
+                });
+
+                res.status(201).json({
+                    success: true,
+                    message: "Cart product was created successfully"
+                });
+                return res.status(200).json({ success:true, newElement});
+            } else {
+                const newValueQuantity = productExistInCart.quanditySelected + quantitySelected;
+                const updateElement = await CartProduct.update({
+                    newValueQuantity,
+                    isOrder,
+                    shoppingCartId
+                });
+
+                res.status(201).json({
+                    success: true,
+                    message: "Cart product was created successfully"
+                });
+                return res.status(200).json({ success:true, updateElement});
+            }
+            
+            
         }
         return res.status(404).json({ success:false, message: "Cart not found"});
             
