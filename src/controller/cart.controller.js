@@ -219,9 +219,10 @@ exports.updateCartProduct = async(req, res) => {
 
     try {
 
-        const { cartProductId } = req.params;
-        const { quantitySelected } = req.body;
+        const { cartProductId, customer_id } = req.params;
+        const {quantitySelected}  = req.body;
 
+        
         if(isNaN(cartProductId) || isNaN(quantitySelected)) {
             return res.status(400).json({
                 success: false,
@@ -234,6 +235,7 @@ exports.updateCartProduct = async(req, res) => {
                 cartProductId: cartProductId
             }
         });
+
 
         const elementUpdated = await elementToUpdate.update({
             quantitySelected: quantitySelected
