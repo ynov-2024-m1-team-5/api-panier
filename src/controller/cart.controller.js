@@ -1,5 +1,6 @@
 const ShoppingCart = require("../models/shoppingCart.model");
 const CartProduct = require("../models/cartProduct.model");
+const Product = require("../models/product.model");
 const { all } = require("../router");
 
 
@@ -290,10 +291,16 @@ exports.getAllCartProduct = async(req, res) => {
 
         const shop = await CartProduct.findAll({
             where: {
-                shoppingCartId: shoppingCart.shoppingCartId
-            }
+                shoppingCartId: shoppingCart.shoppingCartId,
+            },
+            include: [
+                {
+                    model: Product,
+                    required: true,
+                    attributes: ['name', 'thumbnail'], // Specify the attributes you want to include from the Product model
+                },
+            ],
         });
-
 
 
         res.status(200).json({
