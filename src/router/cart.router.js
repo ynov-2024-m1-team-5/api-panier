@@ -8,7 +8,7 @@ router.get('/:customer_id', verifyToken, verifyUser, cartController.getProductsI
 router.post('/createCart', cartController.createShoppingCart);
 router.post('/:customer_id', verifyToken, verifyUser, cartController.createCartProduct);
 router.delete('/:cartProductId/user/:customer_id', verifyToken, verifyUser, cartController.deleteCartProduct);
-router.put('/:cartProductId', verifyToken, verifyUser, cartController.updateCartProduct);
+router.put('/:cartProductId', verifyToken, cartController.updateCartProduct);
 router.get('/:customer_id/cartProducts', verifyToken, verifyUser, cartController.getAllCartProduct);
 
 module.exports = router;
